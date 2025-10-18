@@ -28,7 +28,7 @@ const server = http.createServer(app);
 // === SOCKET.IO SETUP ===
 const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
-  maxHttpBufferSize: 10 * 1024 * 1024, // 10MB per message
+  maxHttpBufferSize: 100 * 1024 * 1024, // 10MB per message
   pingTimeout: 60000,
   pingInterval: 25000,
 });
@@ -57,7 +57,7 @@ const activeMultipartUploads = new Map(); // { uploadId: { Key, roomId, timeoutH
 const roomMessages = {}; // last 5 messages per room
 
 // === Helper: auto-abort multipart uploads ===
-function scheduleMultipartAbort(uploadId, key, ttlMs = 30 * 60 * 1000, roomId = null) {
+function scheduleMultipartAbort(uploadId, key, ttlMs = 300 * 60 * 1000, roomId = null) {
   if (activeMultipartUploads.has(uploadId)) {
     clearTimeout(activeMultipartUploads.get(uploadId).timeoutHandle);
   }
