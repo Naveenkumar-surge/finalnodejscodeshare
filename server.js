@@ -57,7 +57,7 @@ const activeMultipartUploads = new Map(); // { uploadId: { Key, roomId, timeoutH
 const roomMessages = {}; // last 5 messages per room
 
 // === Helper: auto-abort multipart uploads ===
-function scheduleMultipartAbort(uploadId, key, ttlMs = 4 * 60 * 1000, roomId = null) {
+function scheduleMultipartAbort(uploadId, key, ttlMs = 30 * 60 * 1000, roomId = null) {
   if (activeMultipartUploads.has(uploadId)) {
     clearTimeout(activeMultipartUploads.get(uploadId).timeoutHandle);
   }
@@ -139,7 +139,7 @@ io.on("connection", (socket) => {
       });
 
       // auto-abort if no activity after 4 mins
-      scheduleMultipartAbort(UploadId, Key, 4 * 60 * 1000, roomId);
+      scheduleMultipartAbort(UploadId, Key, 30 * 60 * 1000, roomId);
 
       socket.emit("multipart-initiated", { uploadId: UploadId, key: Key });
       console.log(`✅ Multipart upload started: ${Key}, UploadId: ${UploadId}`);
@@ -228,7 +228,7 @@ io.on("connection", (socket) => {
         } catch (err) {
           console.error("Error deleting file:", err);
         }
-      }, 4 * 60 * 1000);
+      }, 30 * 60 * 1000);
 
       console.log(`✅ Completed upload: ${location}`);
     } catch (err) {
